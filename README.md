@@ -2,12 +2,12 @@
 
 ## Template
 
-[Original Template](screenshots/template.png)
+![Original Template](screenshots/template.png)
 
 ## Replaced (Libreoffice)
 
-[Libreoffice Replaced](screenshots/output-libreoffice.png)
+![Libreoffice Replaced](screenshots/output-libreoffice.png)
 
 ## Replaced (Excel Web)
 
-[Excel Web Replaced](screenshots/excel-web.png)
+![Excel Web Replaced](screenshots/excel-web.png)

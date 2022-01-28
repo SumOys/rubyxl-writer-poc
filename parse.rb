@@ -27,26 +27,45 @@ s2.sheet_name = "Bob1"
 s2.add_cell(0, 0, "Foo")
 
 replace = {
-  "NAME": "Sumit",
-  "WEBSITE": "https://example1.com"
+  "FIRST_NAME": "Sarah",
+  "LAST_NAME": "Falsely",
+  "WEBSITE_1": "https://example.com",
+  "WEBSITE_2": "https://example.org",
+  "STREET_NO": "12345",
+  "STREET": "Saturn Lane"
 }
 
-workbook.worksheets.each_with_index { |worksheet, sheet_num|
+def render_cell(cell, replace)
+  val = cell&.value.to_s
+  links = []
+  caps = val.scan(REPLACEMENT_KEY_REGEX).to_h
+  unless caps.size == 0
+    caps.each do |pattern, name|
+      key = name.to_sym
+      if replace[key].match?(/^https?:\/\//)
+        links << %{HYPERLINK("#{replace[key]}", "Download Document")}
+      else
+        val.gsub!(pattern, replace[key])
+      end
+    end
+  end
+
+  if links.size == 1
+    cell.change_contents(val, links.first)
+    cell.change_font_color("0000FF")
+  elsif links.size > 1
+    cell.change_contents("Invalid: Multiple Attachments in a single cell")
+  else
+    cell.change_contents(val)
+  end
+      
+end
+
+workbook.worksheets.each { |worksheet|
   worksheet.each { |row|
-     row && row.cells.each { |cell|
-       val = cell && cell.value
-       cap = REPLACEMENT_KEY_REGEX.match(val)
-       unless cap.nil?
-        key = cap.captures.last.to_sym
-        if replace[key] =~ /^https?:\/\// then
-          link = %Q{HYPERLINK("#{replace[key]}", "Download Document")}
-          cell.change_contents('', link)
-          cell.change_font_color("0000FF")
-        else
-          cell.change_contents(replace[key])
-        end
-       end
-     }
+    row&.cells&.each { |cell|
+      render_cell(cell, replace)
+    }
   }
 }
 
